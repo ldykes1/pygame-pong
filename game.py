@@ -4,31 +4,22 @@ import math
 from functions import Player, Ball
 
 pygame.init()
-screen = pygame.display.set_mode((1280, 720))
+screen_width = 1280
+screen_height = 720
+screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Pong Replica")
 clock = pygame.time.Clock()
-running = True
+
 colour_theme = "white"
-game_speeds = {
-    "slow": 5,
-    "medium": 8,
-    "fast": 12,
-    "lightning": 20
-}
-game_speed = game_speeds["fast"]
+game_speed = 8
 
-SCR_HEIGHT = screen.get_height()
-SCR_WIDTH = screen.get_width()
+player_one = Player(color=colour_theme, speed=game_speed, side="left", screen_height=screen_height, screen_width=screen_width)
+player_two = Player(color=colour_theme, speed=game_speed, side="right", screen_height=screen_height, screen_width=screen_width)
 
-bat_1 = Player(colour_theme, game_speed, 0, SCR_HEIGHT / 2)
-bat_2 = Player(colour_theme, game_speed, SCR_WIDTH - 10, SCR_HEIGHT / 2)
-ball = Ball(colour_theme, game_speed, SCR_WIDTH / 2, SCR_HEIGHT / 2)
+ball_angle = math.radians(random.choice([0, 180]) + random.randrange(-60,60))
+ball = Ball(color=colour_theme, speed=game_speed, angle=ball_angle, screen_height=screen_height, screen_width=screen_width)
 
-angle_bound = int(math.degrees(math.atan(SCR_HEIGHT / 2 / SCR_WIDTH / 2)))
-ball_angle = random.choice([0, 180]) + random.randint(angle_bound, 2 * angle_bound)
-x_multiplier = 1
-y_multiplier = 1
-
+running = True
 while running:
 
     for event in pygame.event.get():
@@ -36,29 +27,21 @@ while running:
             running = False
 
     screen.fill("black")
-    screen.blit(bat_1.surface, bat_1.pos)
-    screen.blit(bat_2.surface, bat_2.pos)
-    screen.blit(ball.surface, ball.pos)  
+    screen.blit(player_one.surface, player_one.rect)
+    screen.blit(player_two.surface, player_two.rect)
+    screen.blit(ball.surface, ball.rect)
+
+    ball.move()
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_w]:
-        bat_1.move(up=True)
+        player_one.move(up=True)
     if keys[pygame.K_s]:
-        bat_1.move(down=True)
+        player_one.move(down=True)
     if keys[pygame.K_UP]:
-        bat_2.move(up=True)
+        player_two.move(up=True)
     if keys[pygame.K_DOWN]:
-        bat_2.move(down=True)
-
-    ball.move(x_multiplier, y_multiplier, ball_angle)
-    if ball.pos.x < 0:
-        x_multiplier = 1
-    if ball.pos.x > SCR_WIDTH:
-        x_multiplier = -1
-    if ball.pos.y < 0:
-        y_multiplier = 1
-    if ball.pos.y > SCR_HEIGHT:
-        y_multiplier = -1
+        player_two.move(down=True)
 
     pygame.display.update()
 
