@@ -54,6 +54,7 @@ class Ball():
         self.rect.center = self.pos
         if self.rect.collideobjects(player_rects):
             self.velocity.x *= -1
+            # self.velocity += pygame.Vector2(self.velocity.x * 0.1, self.velocity.y * 0.1)
         if self.rect.top < 0 or self.rect.bottom > self.screen_height:
             self.velocity.y *= -1
 
