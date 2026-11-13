@@ -6,7 +6,7 @@ from functions import Player, Ball, Scoreboard
 screen_width = 1280
 screen_height = 720
 colour_theme = "white"
-game_speed = 8
+game_speed = 15
 game_font = "press_start_2p.ttf"
 
 pygame.init()
@@ -32,7 +32,10 @@ def fill_screen() -> None:
 
 running = True
 reset = True
+dt = 0
 while running:
+
+    dt += clock.tick(60)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -41,17 +44,17 @@ while running:
     keys = pygame.key.get_pressed()
 
     if reset:
-
-        ball_angle = math.radians(random.choice([0, 180]) + random.randrange(-60,60))
-        ball.set_velocity(angle=ball_angle)
+        ball.reset()
         player_one.reset()
         player_two.reset()
         fill_screen()
 
-        instructions = pygame.font.SysFont(name=game_font, size=40)
-        instruction_surface = instructions.render("PRESS ENTER TO START", False, colour_theme)
+        font = pygame.font.SysFont(name=game_font, size=40)
+        instruction_surface = font.render(f"PRESS ENTER TO START", False, colour_theme)
         instruction_rect = instruction_surface.get_rect(center=(screen_width / 2, screen_height - 50))
-        screen.blit(instruction_surface, instruction_rect)
+
+        if int(dt / 1000) % 2 == 0:
+            screen.blit(instruction_surface, instruction_rect)
 
         if keys[pygame.K_RETURN]:
             reset = False
@@ -72,17 +75,13 @@ while running:
 
         if ball.rect.left < 0:
             player_two.add_point()
-            ball.pos = ball.rect.center = pygame.Vector2(screen_width / 2, screen_height / 2)
             reset = True
         if ball.rect.right > screen_width:
             player_one.add_point()
-            ball.pos = ball.rect.center = pygame.Vector2(screen_width / 2, screen_height / 2)
             reset = True
 
         scoreboard.update(f'{player_one.score} : {player_two.score}')
 
     pygame.display.update()
-
-    dt = clock.tick(60)
 
 pygame.quit()
